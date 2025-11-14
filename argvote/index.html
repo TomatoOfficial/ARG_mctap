@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>argvote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #2e2e2e;
+            color: #ecf0f1;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/png;base64,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');
+            background-size: cover;
+            background-position: center;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            padding: 2rem;
+            background-color: rgba(114, 114, 114, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #bbbbbb;
+            text-shadow: 2px 2px 0 #4d4d4d;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .pixel-image {
+            width: 264px;
+            height: 164px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            border: 4px solid #9e9e9e;
+            border-radius: 8px;
+            background-color: #5f5e5e;
+        }
+
+        .pixel-image:hover {
+            transform: scale(1.1);
+            border-color: #ffffff;
+        }
+
+        .version {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: #95a5a6;
+            font-family: 'Courier New', monospace;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #7a7a7a;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h2 {
+            color: #e74c3c;
+            margin-bottom: 1rem;
+        }
+
+        .modal p {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        button {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-btn {
+            background-color: #a7a7a7;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #a8a8a8;
+            color: white;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .image-container {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background"></div>
+
+    <div class="container">
+        <h1>In MC-TAP</h1>
+        <h1>Do you want to: </h1>
+
+        <div class="image-container">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAABSBAMAAABnDWGmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAGUExURQAAAP///6XZn90AAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCA1LjEuN4vW9zkAAAC2ZVhJZklJKgAIAAAABQAaAQUAAQAAAEoAAAAbAQUAAQAAAFIAAAAoAQMAAQAAAAIAAAAxAQIAEAAAAFoAAABphwQAAQAAAGoAAAAAAAAAYAAAAAEAAABgAAAAAQAAAFBhaW50Lk5FVCA1LjEuNwADAACQBwAEAAAAMDIzMAGgAwABAAAAAQAAAAWgBAABAAAAlAAAAAAAAAACAAEAAgAEAAAAUjk4AAIABwAEAAAAMDEwMAAAAAAlR56NozS1xQAAAQRJREFUWMPV1gEOwiAMBdD+G7T3v6zQgkHNHA3dWEE0KdublGKkhzRZbEfE8AjsIziUoNSExBLYR3AoQakJiSWQmuBQglITEktgH8GhBDmJGmpP5vKm8+/IwfW/IdRR7mCxIRaxbzZDoPbyWa4vgHaLVILvIlouvgjXQlouVoi+EFrPBa3kwhaCtqkfC3Gls9SVlZaf+JicqPBZAqmJueN+HaEbC9Z91C5//+UehGtp1bmRgIdAI7h3SC/yG4lxIToY/lxIP2b2E8xw50KMqEesvdy5iCHIEL1fZAMxTJ8etOsJDiUoNSGxBFITHErQPkJiCaQmOJSg1ITEEthHnDZ6QiN6AeqbDi4vZJeyAAAAAElFTkSuQmCC"
+                alt="左图" class="pixel-image" id="left-image">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAABSBAMAAABnDWGmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAGUExURQAAAP///6XZn90AAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCA1LjEuN4vW9zkAAAC2ZVhJZklJKgAIAAAABQAaAQUAAQAAAEoAAAAbAQUAAQAAAFIAAAAoAQMAAQAAAAIAAAAxAQIAEAAAAFoAAABphwQAAQAAAGoAAAAAAAAAYAAAAAEAAABgAAAAAQAAAFBhaW50Lk5FVCA1LjEuNwADAACQBwAEAAAAMDIzMAGgAwABAAAAAQAAAAWgBAABAAAAlAAAAAAAAAACAAEAAgAEAAAAUjk4AAIABwAEAAAAMDEwMAAAAAAlR56NozS1xQAAAQ5JREFUWMPll4sOgyAMRds/uP3/nx0PQbeg3IbMoKAsyuO4HgvZZJJig6WNwNnj9GEI83h7OwK8zdcjjLc5OQK0ivcjjLa5AAKszWkRsSWODxMQau6On+mu8cQmQgvCct2uNH01BqHxyKGEqfWIAyG4C7G5+EGkYOBzMYI4C0THXajHxfdLLYGYX2dJLT/i2EWs038jQC2yByCMU9FEIGdGutS60OXiR1WrTUtm7LW2UQjNaV5SXOK5J74HoYOI0F48VITDRUZoA3F3IHHCEaE+hOThsu0WCSEuBBqItIuo5/9I7ezn9zUCxCJ7BMIYFasgQNhcBWGEzWUQ6Nt8BsL6KtZBoGvzDgRRZIYi8gHZugB8sbhLDgAAAABJRU5ErkJggg=="
+                alt="右图" class="pixel-image" id="right-image">
+        </div>
+
+        
+    </div>
+
+    <div class="version" id="version">[727ccc32]</div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirm-btn">Confirm</button>
+                <button class="cancel-btn" id="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const leftImage = document.getElementById('left-image');
+            const rightImage = document.getElementById('right-image');
+            const modal = document.getElementById('modal');
+            const confirmBtn = document.getElementById('confirm-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const version = document.getElementById('version');
+
+            let selectedOption = '';
+
+            // 图片点击事件
+            leftImage.addEventListener('click', function () {
+                selectedOption = 'left';
+                modal.style.display = 'flex';
+            });
+
+            rightImage.addEventListener('click', function () {
+                selectedOption = 'right';
+                modal.style.display = 'flex';
+            });
+
+            // 确认按钮点击事件
+            confirmBtn.addEventListener('click', function () {
+                modal.style.display = 'none';
+
+                if (selectedOption === 'left') {
+                    // 跳转到左图结果页面
+                    window.location.href = 'left-result.html';
+                } else if (selectedOption === 'right') {
+                    // 跳转到右图结果页面
+                    window.location.href = 'right-result.html';
+                }
+            });
+
+            // 取消按钮点击事件
+            cancelBtn.addEventListener('click', function () {
+                modal.style.display = 'none';
+            });
+
+            // 点击模态框外部关闭
+            window.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

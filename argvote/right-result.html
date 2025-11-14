@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>argvote</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #2e2e2e;
+            color: #ecf0f1;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 93%;
+            background-position: center;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            padding: 2rem;
+            background-color: rgba(114, 114, 114, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #bbbbbb;
+            text-shadow: 2px 2px 0 #4d4d4d;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .pixel-image {
+            width: 264px;
+            height: 164px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            border: 4px solid #9e9e9e;
+            border-radius: 8px;
+            background-color: #5f5e5e;
+        }
+
+        .pixel-image:hover {
+            transform: scale(1.1);
+            border-color: #ffffff;
+        }
+
+        .version {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: #95a5a6;
+            font-family: 'Courier New', monospace;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #7a7a7a;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h2 {
+            color: #e74c3c;
+            margin-bottom: 1rem;
+        }
+
+        .modal p {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        button {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-btn {
+            background-color: #a7a7a7;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #a8a8a8;
+            color: white;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .image-container {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background"></div>
+
+    <div class="container">
+        <h1>Thank you for your choice</h1>
+        <p>This selection has been recorded.</p>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAABSBAMAAABnDWGmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAGUExURQAAAP///6XZn90AAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCA1LjEuN4vW9zkAAAC2ZVhJZklJKgAIAAAABQAaAQUAAQAAAEoAAAAbAQUAAQAAAFIAAAAoAQMAAQAAAAIAAAAxAQIAEAAAAFoAAABphwQAAQAAAGoAAAAAAAAAYAAAAAEAAABgAAAAAQAAAFBhaW50Lk5FVCA1LjEuNwADAACQBwAEAAAAMDIzMAGgAwABAAAAAQAAAAWgBAABAAAAlAAAAAAAAAACAAEAAgAEAAAAUjk4AAIABwAEAAAAMDEwMAAAAAAlR56NozS1xQAAAQ5JREFUWMPll4sOgyAMRds/uP3/nx0PQbeg3IbMoKAsyuO4HgvZZJJig6WNwNnj9GEI83h7OwK8zdcjjLc5OQK0ivcjjLa5AAKszWkRsSWODxMQau6On+mu8cQmQgvCct2uNH01BqHxyKGEqfWIAyG4C7G5+EGkYOBzMYI4C0THXajHxfdLLYGYX2dJLT/i2EWs038jQC2yByCMU9FEIGdGutS60OXiR1WrTUtm7LW2UQjNaV5SXOK5J74HoYOI0F48VITDRUZoA3F3IHHCEaE+hOThsu0WCSEuBBqItIuo5/9I7ezn9zUCxCJ7BMIYFasgQNhcBWGEzWUQ6Nt8BsL6KtZBoGvzDgRRZIYi8gHZugB8sbhLDgAAAABJRU5ErkJggg=="
+            alt="left" class="selected-image">
+
+        <p>Please take a screenshot of this page and send it to the administrator.</p>
+
+    </div>
+
+    <div class="version">[727ccc32]</div>
+</body>
+
+</html>
